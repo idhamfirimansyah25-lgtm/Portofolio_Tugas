@@ -1,11 +1,17 @@
 <?php
-require __DIR__ . '/../public/index.php';
 
-// Paksa folder storage & cache Laravel pindah ke folder /tmp bawaan Vercel
-$storagePath = '/tmp/storage/bootstrap/cache';
-if (!is_dir($storagePath)) {
-    mkdir($storagePath, 0755, true);
-}
+// 1. Register The Auto Loader
+require __DIR__ . '/../vendor/autoload.php';
 
-putenv("CONTAINER_STORAGE_PATH=/tmp");
-putenv("APP_STORAGE=/tmp");
+// 2. Run The Application
+$app = require_once __DIR__ . '/../bootstrap/app.php';
+
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+
+$response = $kernel->handle(
+    $request = Illuminate\Http\Request::capture()
+);
+
+$response->send();
+
+$kernel->terminate($request, $response);
